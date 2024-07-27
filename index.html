@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+    body,html{
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #111;
+    }
+</style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script type="module">
+        import { tickOfPingPong, moveRightPaddleUp , moveRightPaddleDown, moveLeftPaddleUp, moveLeftPaddleDown } from "./build/release.js";
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        function tick(){
+            let resultImg = tickOfPingPong(canvas.width, canvas.height);
+            // Create an ImageData object
+let imageData = ctx.createImageData(canvas.width, canvas.height);
+let data = imageData.data;
+
+// Update the ImageData object with the pixel data
+for(let i = 0; i < resultImg.length; i++) {
+    for(let j = 0; j < resultImg[i].length; j++) {
+        let color = resultImg[i][j];
+        
+        let index = (i * canvas.width + j) * 4;
+        data[index] = (color >> 16) & 0xFF; // Red
+        data[index + 1] = (color >> 8) & 0xFF; // Green
+        data[index + 2] = color & 0xFF; // Blue
+        data[index + 3] = 255; // Alpha
+    }
+}
+
+// Draw the image in one go
+ctx.putImageData(imageData, 0, 0);
+        }
+        setInterval(tick, 1000/40);
+        document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") { moveRightPaddleUp()}
+            if(e.key === "w"){moveLeftPaddleUp()}
+        });
+        document.addEventListener("keyup", (e) => {
+        if (e.key === "ArrowUp") { moveRightPaddleDown()}
+            if(e.key === "w"){moveLeftPaddleDown()}
+        });
+    </script>
+</body>
+</html>
